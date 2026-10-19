@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}{{ ev.evidence_no }}{% endblock %}
+{% block content %}
+<h1>{{ ev.evidence_no }} <span class="badge b-{{ ev.status|lower }}">{{ ev.status }}</span></h1>
+<p class="muted">{{ ev.title }} (case {{ ev.case_number }})</p>
+
+<section class="card">
+  <dl class="meta">
+    <dt>File</dt><dd>{{ ev.original_filename }} ({{ '{:,}'.format(ev.size_bytes) }} bytes)</dd>
+    <dt>Registered</dt><dd>{{ ev.created_at|dt }} by {{ ev.uploaded_by.full_name }}</dd>
+    <dt>Current custodian</dt><dd>{{ ev.custodian.full_name }}</dd>
+    <dt>Original SHA-256</dt><dd><code class="hash">{{ ev.sha256 }}</code></dd>
+    <dt>Last verified</dt><dd>{{ ev.last_verified_at|dt }}</dd>
+    {% if ev.description %}<dt>Description</dt><dd>{{ ev.description }}</dd>{% endif %}
+  </dl>
+  <div class="actions">
+    <form method="post" action="{{ url_for('evidence.verify', evidence_id=ev.id) }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button class="btn" type="submit">Verify integrity now</button>
+    </form>
+    {% if can_download %}<a class="btn btn-ghost" href="{{ url_for('evidence.download', evidence_id=ev.id) }}">Download file</a>{% endif %}
+  </div>
+</section>
+
+<h2>Chain of custody</h2>
+<ol class="chain">
+  {% for c in ev.custody_events %}
+  <li>
+    <b>{{ 'Registered to' if c.action == 'REGISTERED' else 'Transferred to' }} {{ c.to_user.full_name }}</b>
+    {% if c.from_user %}<span class="muted"> from {{ c.from_user.full_name }}</span>{% endif %}
+    <div class="muted">{{ c.created_at|dt }}</div>
+    <div>{{ c.reason }}</div>
+  </li>
+  {% endfor %}
+</ol>
+
+{% if can_transfer %}
+<section class="card narrow">
+  <h2>Transfer custody</h2>
+  <form method="post" action="{{ url_for('evidence.transfer', evidence_id=ev.id) }}" class="form" data-confirm="Transfer custody of this evidence?">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label>New custodian
+      <select name="to_user_id" required>
+        <option value="">Select a person</option>
+        {% for u in candidates %}<option value="{{ u.id }}">{{ u.full_name }} ({{ u.role }})</option>{% endfor %}
+      </select></label>
+    <label>Reason <input name="reason" required minlength="5" maxlength="500" placeholder="Sent to forensic lab for imaging"></label>
+    <button class="btn" type="submit">Transfer custody</button>
+  </form>
+</section>
+{% endif %}
+
+<h2>Verification history</h2>
+{% if ev.verifications %}
+<table class="table">
+  <tr><th>When</th><th>By</th><th>Result</th><th>Computed hash</th></tr>
+  {% for v in ev.verifications %}
+  <tr><td>{{ v.created_at|dt }}</td><td>{{ v.verified_by.full_name }}</td>
+      <td><span class="badge b-{{ 'intact' if v.result == 'PASS' else 'tampered' if v.result == 'FAIL' else 'error' }}">{{ v.result }}</span></td>
+      <td><code class="hash">{{ v.computed_hash or '-' }}</code></td></tr>
+  {% endfor %}
+</table>
+{% else %}<p class="muted">This item has not been verified yet.</p>{% endif %}
+{% endblock %}

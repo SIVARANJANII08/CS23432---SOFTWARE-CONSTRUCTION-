@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h1>Dashboard</h1>
+<div class="stats">
+  <div class="stat"><b>{{ total }}</b><span>Evidence items</span></div>
+  <div class="stat ok"><b>{{ counts['Intact'] }}</b><span>Verified intact</span></div>
+  <div class="stat bad"><b>{{ counts['Tampered'] }}</b><span>Tampered</span></div>
+  <div class="stat warn"><b>{{ counts['Unverified'] }}</b><span>Not yet verified</span></div>
+  <div class="stat"><b>{{ mine }}</b><span>In your custody</span></div>
+</div>
+<p class="muted">Files are stored in: {{ storage_name }}</p>
+<h2>Recently registered</h2>
+{% if recent %}
+<table class="table">
+  <tr><th>Evidence no.</th><th>Case</th><th>Title</th><th>Custodian</th><th>Status</th></tr>
+  {% for ev in recent %}
+  <tr><td><a href="{{ url_for('evidence.detail', evidence_id=ev.id) }}">{{ ev.evidence_no }}</a></td>
+      <td>{{ ev.case_number }}</td><td>{{ ev.title }}</td><td>{{ ev.custodian.full_name }}</td>
+      <td><span class="badge b-{{ ev.status|lower }}">{{ ev.status }}</span></td></tr>
+  {% endfor %}
+</table>
+{% else %}
+<p class="muted">Nothing registered yet.{% if current_user.role in ('admin','investigator') %} <a href="{{ url_for('evidence.new_evidence') }}">Register the first item.</a>{% endif %}</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Register evidence{% endblock %}
+{% block content %}
+<h1>Register evidence</h1>
+<form method="post" enctype="multipart/form-data" class="card form narrow" id="upload-form">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <input type="hidden" name="client_sha256" id="client_sha256">
+  <label>Case number <input name="case_number" required maxlength="50" placeholder="CASE-2026-014"></label>
+  <label>Title <input name="title" required maxlength="200" placeholder="Seized laptop disk image"></label>
+  <label>Description <textarea name="description" rows="3" maxlength="2000"></textarea></label>
+  <label>Evidence file <input type="file" name="file" id="file" required></label>
+  <p class="hashbox" id="hashbox" hidden>SHA-256 computed in your browser: <code id="hashval"></code></p>
+  <p class="muted">The server recomputes the hash. If the two differ, the upload is rejected.</p>
+  <button class="btn" type="submit">Register and upload</button>
+</form>
+{% endblock %}

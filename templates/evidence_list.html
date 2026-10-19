@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Evidence{% endblock %}
+{% block content %}
+<h1>Evidence register</h1>
+<form method="get" class="inline-form">
+  <input name="q" value="{{ q }}" placeholder="Search case, title, evidence no. or hash">
+  <button class="btn" type="submit">Search</button>
+</form>
+{% if items %}
+<table class="table">
+  <tr><th>Evidence no.</th><th>Case</th><th>Title</th><th>File</th><th>Custodian</th><th>Status</th></tr>
+  {% for ev in items %}
+  <tr><td><a href="{{ url_for('evidence.detail', evidence_id=ev.id) }}">{{ ev.evidence_no }}</a></td>
+      <td>{{ ev.case_number }}</td><td>{{ ev.title }}</td><td>{{ ev.original_filename }}</td>
+      <td>{{ ev.custodian.full_name }}</td>
+      <td><span class="badge b-{{ ev.status|lower }}">{{ ev.status }}</span></td></tr>
+  {% endfor %}
+</table>
+{% else %}<p class="muted">No evidence matches.</p>{% endif %}
+{% endblock %}

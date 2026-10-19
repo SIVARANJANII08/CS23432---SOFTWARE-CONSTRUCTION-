@@ -1,0 +1,8 @@
+   trigger:
+    - main
+   pool:
+     vmImage: 'ubuntu-latest'
+   steps:
+   - checkout: self
+   - script: echo "Azure Pipeline for EvidenceTrail is running!"
+     displayName: 'Run sample script'

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Sign in{% endblock %}
+{% block content %}
+<section class="login">
+  <h1>EvidenceTrail</h1>
+  <p class="lede">Every file registered here gets a SHA-256 fingerprint, a named custodian, and a logged history.</p>
+  <form method="post" class="card form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label>Username <input name="username" autocomplete="username" required autofocus></label>
+    <label>Password <input type="password" name="password" autocomplete="current-password" required></label>
+    <button class="btn" type="submit">Sign in</button>
+  </form>
+</section>
+{% endblock %}

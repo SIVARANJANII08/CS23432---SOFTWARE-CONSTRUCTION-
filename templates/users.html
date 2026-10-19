@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Users{% endblock %}
+{% block content %}
+<h1>User management</h1>
+<table class="table">
+  <tr><th>Username</th><th>Name</th><th>Role</th><th>Status</th><th></th></tr>
+  {% for u in users %}
+  <tr><td>{{ u.username }}</td><td>{{ u.full_name }}</td><td>{{ u.role }}</td>
+      <td><span class="badge b-{{ 'intact' if u.is_active_user else 'tampered' }}">{{ 'Active' if u.is_active_user else 'Disabled' }}</span></td>
+      <td>{% if u.id != current_user.id %}
+        <form method="post" action="{{ url_for('admin.toggle_user', user_id=u.id) }}" data-confirm="Change this account's status?">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button class="btn btn-ghost" type="submit">{{ 'Disable' if u.is_active_user else 'Enable' }}</button>
+        </form>{% endif %}</td></tr>
+  {% endfor %}
+</table>
+<section class="card narrow">
+  <h2>Add a user</h2>
+  <form method="post" action="{{ url_for('admin.create_user') }}" class="form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label>Username <input name="username" required maxlength="64"></label>
+    <label>Full name <input name="full_name" required maxlength="120"></label>
+    <label>Role <select name="role">{% for r in roles %}<option value="{{ r }}">{{ r }}</option>{% endfor %}</select></label>
+    <label>Temporary password <input type="password" name="password" required autocomplete="new-password"></label>
+    <button class="btn" type="submit">Create user</button>
+  </form>
+</section>
+{% endblock %}
