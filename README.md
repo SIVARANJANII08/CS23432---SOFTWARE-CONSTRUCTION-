@@ -169,10 +169,7 @@ This project was planned and managed with Azure DevOps:
 - Load testing with Azure Load Testing
 - CI pipeline with `azure-pipelines.yml`
 
-## 14. Acknowledgement
 
-Developed as part of the **CS23432 – Software Construction** course at Rajalakshmi Engineering College, Chennai, under the guidance of **Mrs. Fowzia Sihana**, Assistant Professor, Department of Computer Science and Engineering (Cyber Security).
 
 ---
 
-**Developed by Sivaranjanii M and Sree Dharshini M**
